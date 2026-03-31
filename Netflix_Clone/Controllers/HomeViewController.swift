@@ -56,7 +56,7 @@ class HomeViewController: UIViewController {
         homeFeedTable.frame = view.bounds
     }
     private func getTrendingMovies(){
-        APICaller.shared.getTrendingMovies { results in
+        APICaller.shared.getUpcommingMovies { results in
             switch results{
             case .success(let movies):
                 print(movies)
