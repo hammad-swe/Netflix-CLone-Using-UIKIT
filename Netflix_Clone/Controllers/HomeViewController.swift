@@ -55,6 +55,8 @@ class HomeViewController: UIViewController {
         super.viewDidLayoutSubviews()
         homeFeedTable.frame = view.bounds
     }
+    
+    
     private func getTrendingMovies(){
         APICaller.shared.getUpcommingMovies { results in
             switch results{
