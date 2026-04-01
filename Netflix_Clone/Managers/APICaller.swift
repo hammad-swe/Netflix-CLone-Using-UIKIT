@@ -157,6 +157,53 @@ class APICaller {
         task.resume()
     }
     
+    // Search Movies
+    
+    func search(with query: String,complition: @escaping (Result<[Title], Error>) -> Void){
+        
+        guard let query = query.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) else {return}
+        guard let url = URL(string: "\(Constants.baseURL)/3/search/movie?api_key=\(Constants.Api_Key)&query=\(query)") else {return}
+        
+        
+        let task = URLSession.shared.dataTask(with: URLRequest(url: url)){ data , _, error in
+            guard let data = data, error == nil else {return}
+            
+            DispatchQueue.main.async {
+                do{
+                    let results = try JSONDecoder().decode(TrendingTitleResponse.self, from: data)
+                    complition(.success(results.results))
+                }
+                catch{
+                    complition(.failure(APIError.failedToGetData))
+                }
+            }
+        }
+        task.resume()
+    }
+    
+    //get movie from youtubApi to show
+    
+    func getMovie(with query : String, complition: @escaping (Result<VideoElement, Error>) -> Void){
+        guard let query = query.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) else {return}
+       guard let url = URL(string: "\(Constants.YoutubebaseURL)/q=\(query)&key=\(Constants.YoutubeAPI_KEY)") else {return}
+        
+        let task = URLSession.shared.dataTask(with: URLRequest(url: url)){ data , _, error in
+            guard let data = data, error == nil else {return}
+            
+            DispatchQueue.main.async {
+                do{
+                    let results = try JSONDecoder().decode(YoutubeSearchResults.self, from: data)
+                    complition(.success(results.items[0]))
+                }
+                catch{
+                    complition(.failure(error))
+                    print(error.localizedDescription)
+                }
+            }
+        }
+        task.resume()
+    }
+    
 }
 
 
