@@ -21,7 +21,7 @@ import Foundation
  }
  */
 
-struct YoutubeSearchResults: Codable, Sendable{
+struct YoutubeSearchResponse: Codable, Sendable{
     let items: [VideoElement]
     
     
@@ -30,7 +30,7 @@ struct VideoElement: Codable, Sendable{
     let id : idVideoElement
 }
 
-struct idVideoElement: Codable {
+struct idVideoElement: Codable , Sendable{
     let kind: String
     let videoId: String
 }

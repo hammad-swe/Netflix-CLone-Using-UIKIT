@@ -183,7 +183,10 @@ class APICaller {
     
     //get movie from youtubApi to show
     
-    func getMovie(with query : String, complition: @escaping (Result<VideoElement, Error>) -> Void){
+    func getMovie(with query : String, completion: @escaping (Result<VideoElement, Error>) -> Void){
+        
+        print("DEBUG: Searching YouTube for: \(query)")
+        
         guard let query = query.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) else {return}
        guard let url = URL(string: "\(Constants.YoutubebaseURL)/q=\(query)&key=\(Constants.YoutubeAPI_KEY)") else {return}
         
@@ -192,11 +195,19 @@ class APICaller {
             
             DispatchQueue.main.async {
                 do{
-                    let results = try JSONDecoder().decode(YoutubeSearchResults.self, from: data)
-                    complition(.success(results.items[0]))
+                    let results = try JSONDecoder().decode(YoutubeSearchResponse.self, from: data)
+                    if let video = results.items.first {
+                        completion(.success(video))
+                    } else {
+                        // This stops the crash and tells you what happened
+                        print("YouTube returned 0 results for this search.")
+                        return
+                    }
+//                    completion(.success(results.items[0]))
+                    
                 }
                 catch{
-                    complition(.failure(error))
+                    completion(.failure(error))
                     print(error.localizedDescription)
                 }
             }
