@@ -56,6 +56,19 @@ class CollectionViewTableViewCell: UITableViewCell {
             
         }
     }
+    
+    private func downloadTitleAt(indexPath: IndexPath){
+        
+        DataPersistanceManager.shared.downloadTitleWith(model: titles[indexPath.row]) { result in
+            switch result{
+            case .success():
+                print("Download to the Database")
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
+        
+    }
 
 }
 
@@ -97,7 +110,7 @@ extension CollectionViewTableViewCell :UICollectionViewDelegate, UICollectionVie
                 guard let strongSelf = self else{
                     return
                 }
-                let viewModel = TitlePreviewViewModel(title: titlename, youtubeview: videoElement, titleOverview: titleOverview)
+                let viewModel = TitlePreviewViewModel(title: titlename, youtubeView: videoElement, titleOverview: titleOverview)
                 self?.delegate?.collectionViewTableViewCellDidTapCell(strongSelf, viewModel: viewModel)
                 
             case .failure(let error):
@@ -105,6 +118,20 @@ extension CollectionViewTableViewCell :UICollectionViewDelegate, UICollectionVie
 
             }
         }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPath: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
+        
+        let config = UIContextMenuConfiguration(
+            identifier: nil,
+            previewProvider: nil) {[weak self] _ in
+                let downloadAction = UIAction(title: "Download", subtitle: nil , image: nil ,identifier: nil ,discoverabilityTitle: nil  ,state: .off) { _ in
+                    guard let indexPath = indexPath.first else { return } // new add
+                    self?.downloadTitleAt(indexPath: indexPath)
+                }
+                return UIMenu(title: "",image: nil ,identifier: nil ,options: .displayInline ,children: [downloadAction] )
+            }
+        return config
     }
     
     

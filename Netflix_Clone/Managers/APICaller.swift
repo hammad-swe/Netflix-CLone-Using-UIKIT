@@ -22,7 +22,7 @@ class APICaller {
     func getTrendingMovies(complition: @escaping (Result<[Title], Error>) ->Void){
         
         
-        guard let url = URL(string: "\(Constants.baseURL)/3/trending/movie/day?api_key=\(Constants.Api_Key)") else {return}
+        guard let url = URL(string: "\(Constants.baseURL)/3/trending/movie/day?api_key=\(Constants.API_KEY)") else {return}
         
         
         let task = URLSession.shared.dataTask(with: URLRequest(url: url)){ data , _, error in
@@ -47,7 +47,7 @@ class APICaller {
     // get trending TV
     
     func getTrendingTv(complition: @escaping (Result<[Title], Error>) -> Void){
-        guard let url = URL(string: "\(Constants.baseURL)/3/trending/tv/day?api_key=\(Constants.Api_Key)") else {return}
+        guard let url = URL(string: "\(Constants.baseURL)/3/trending/tv/day?api_key=\(Constants.API_KEY)") else {return}
         
         
         let task = URLSession.shared.dataTask(with: URLRequest(url: url)){ data , _, error in
@@ -70,7 +70,7 @@ class APICaller {
     // get upcomming Movies
     
     func getUpcommingMovies(complition: @escaping (Result<[Title], Error>) -> Void){
-        guard let url = URL(string: "\(Constants.baseURL)/3/movie/upcoming?api_key=\(Constants.Api_Key)&language=en-US&page=1") else {return}
+        guard let url = URL(string: "\(Constants.baseURL)/3/movie/upcoming?api_key=\(Constants.API_KEY)&language=en-US&page=1") else {return}
         
         
         let task = URLSession.shared.dataTask(with: URLRequest(url: url)){ data , _, error in
@@ -93,7 +93,7 @@ class APICaller {
     // get popular movies
     
     func getPopular(complition: @escaping (Result<[Title], Error>) -> Void){
-        guard let url = URL(string: "\(Constants.baseURL)/3/movie/popular?api_key=\(Constants.Api_Key)&language=en-US&page=1") else {return}
+        guard let url = URL(string: "\(Constants.baseURL)/3/movie/popular?api_key=\(Constants.API_KEY)&language=en-US&page=1") else {return}
         
         
         let task = URLSession.shared.dataTask(with: URLRequest(url: url)){ data , _, error in
@@ -116,7 +116,7 @@ class APICaller {
     // get TopRated
     
     func getTopRated(complition: @escaping (Result<[Title], Error>) -> Void){
-        guard let url = URL(string: "\(Constants.baseURL)/3/movie/top_rated?api_key=\(Constants.Api_Key)&language=en-US&page=1") else {return}
+        guard let url = URL(string: "\(Constants.baseURL)/3/movie/top_rated?api_key=\(Constants.API_KEY)&language=en-US&page=1") else {return}
         
         
         let task = URLSession.shared.dataTask(with: URLRequest(url: url)){ data , _, error in
@@ -138,7 +138,7 @@ class APICaller {
     // Get search or discover movie
     
     func getDiscoveredMovies(complition: @escaping (Result<[Title], Error>) -> Void){
-        guard let url = URL(string: "\(Constants.baseURL)/3/discover/movie?api_key=\(Constants.Api_Key)&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1&with_watch_monetiztion_types=flatrate") else {return}
+        guard let url = URL(string: "\(Constants.baseURL)/3/discover/movie?api_key=\(Constants.API_KEY)&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1&with_watch_monetiztion_types=flatrate") else {return}
         
         
         let task = URLSession.shared.dataTask(with: URLRequest(url: url)){ data , _, error in
@@ -162,7 +162,7 @@ class APICaller {
     func search(with query: String,complition: @escaping (Result<[Title], Error>) -> Void){
         
         guard let query = query.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) else {return}
-        guard let url = URL(string: "\(Constants.baseURL)/3/search/movie?api_key=\(Constants.Api_Key)&query=\(query)") else {return}
+        guard let url = URL(string: "\(Constants.baseURL)/3/search/movie?api_key=\(Constants.API_KEY)&query=\(query)") else {return}
         
         
         let task = URLSession.shared.dataTask(with: URLRequest(url: url)){ data , _, error in
@@ -187,8 +187,8 @@ class APICaller {
         
         print("DEBUG: Searching YouTube for: \(query)")
         
-        guard let query = query.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) else {return}
-       guard let url = URL(string: "\(Constants.YoutubebaseURL)/q=\(query)&key=\(Constants.YoutubeAPI_KEY)") else {return}
+        guard let query = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {return}
+       guard let url = URL(string: "\(Constants.YoutubebaseURL)q=\(query)&key=\(Constants.YoutubeAPI_KEY)") else {return}
         
         let task = URLSession.shared.dataTask(with: URLRequest(url: url)){ data , _, error in
             guard let data = data, error == nil else {return}
@@ -196,14 +196,8 @@ class APICaller {
             DispatchQueue.main.async {
                 do{
                     let results = try JSONDecoder().decode(YoutubeSearchResponse.self, from: data)
-                    if let video = results.items.first {
-                        completion(.success(video))
-                    } else {
-                        // This stops the crash and tells you what happened
-                        print("YouTube returned 0 results for this search.")
-                        return
-                    }
-//                    completion(.success(results.items[0]))
+                    
+                    completion(.success(results.items[0]))
                     
                 }
                 catch{
